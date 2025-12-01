@@ -11,27 +11,32 @@ declare global {
 
 const RecentPostCard = ({ video, onClick }: { video: any, onClick: (videoId: string) => void }) => (
     <div onClick={() => onClick(video.id)} className="group w-64 flex-shrink-0 cursor-pointer">
-      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black border border-gray-700 group-hover:border-blue-500 transition-all">
-        <video className="w-full h-full object-cover" preload="metadata" muted>
+      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-neutral-950 border border-red-900/30 group-hover:border-red-500 transition-all shadow-md group-hover:shadow-red-900/20">
+        <video className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" preload="metadata" muted>
           <source src={video.Url} type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <FaPlay className="text-white text-4xl" />
+        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <div className="bg-red-600/90 text-white rounded-full p-3 backdrop-blur-sm transform scale-75 group-hover:scale-100 transition-transform">
+            <FaPlay className="text-xl ml-1" />
+          </div>
         </div>
-        <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md">
-          New
+        <div className="absolute top-2 left-2 bg-gradient-to-r from-red-700 to-red-900 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm tracking-wide">
+          NEW
         </div>
       </div>
-      <div className="mt-2">
-        <h3 className="text-white font-medium text-sm line-clamp-2">{video.Judul}</h3>
+      <div className="mt-3 px-1">
+        <h3 className="text-neutral-200 font-medium text-sm line-clamp-2 group-hover:text-red-400 transition-colors">{video.Judul}</h3>
       </div>
     </div>
 );
   
 const RecentPostsView = ({ videos, onCardClick }: { videos: any[], onCardClick: (videoId: string) => void }) => (
-    <div className="mb-8">
-      <h2 className="text-2xl font-bold mb-4 text-gray-300">Recent Posts</h2>
-      <div className="flex gap-4 overflow-x-auto pb-4 -mb-4">
+    <div className="mb-10 border-t border-red-900/20 pt-8">
+      <h2 className="text-xl font-bold mb-5 text-red-100 flex items-center">
+        <span className="w-1 h-6 bg-red-600 mr-3 rounded-full"></span>
+        Recent Posts
+      </h2>
+      <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-red-900 scrollbar-track-neutral-900">
         {videos.map((video) => (
           <RecentPostCard key={video.id} video={video} onClick={onCardClick} />
         ))}
@@ -171,7 +176,7 @@ export function PlayVideo() {
             "allowDownload": false,
             "playButtonShowing": true,
             "fillToContainer": false,
-            "primaryColor": "#3b82f6",
+            "primaryColor": "#ef4444",
             "posterImage": ""
           }
         });
@@ -251,18 +256,25 @@ export function PlayVideo() {
   };
 
   if (loading) {
-    return <div className="text-center p-10 text-white">Loading...</div>;
+    return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh]">
+            <FaSpinner className="animate-spin text-4xl text-red-600 mb-4" />
+            <p className="text-red-200">Loading content...</p>
+        </div>
+    );
   }
   
   if (id && !videoFound) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400 text-center p-4">
-        <FaExclamationTriangle size={64} className="mb-4 text-red-500" />
-        <h1 className="text-2xl font-bold text-gray-300">Video Not Found</h1>
-        <p className="mt-2 max-w-md">
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center p-4">
+        <div className="bg-red-900/20 p-6 rounded-full mb-6">
+            <FaExclamationTriangle size={48} className="text-red-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-white mb-2">Video Not Found</h1>
+        <p className="text-neutral-400 max-w-md mb-8">
           Sorry, the video you are looking for does not exist or may have been removed.
         </p>
-        <Link to="/" className="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <Link to="/" className="px-6 py-2 bg-red-700 hover:bg-red-600 text-white font-medium rounded-full transition-colors shadow-lg shadow-red-900/20">
             Go to Homepage
         </Link>
       </div>
@@ -270,77 +282,101 @@ export function PlayVideo() {
   }
   
   const PlayerView = () => (
-    <div className="bg-gray-800 p-4 rounded-lg shadow-lg mb-8">
-      <h1 className="text-2xl font-bold mb-4 text-center break-words text-blue-400">{videoTitle}</h1>
-      <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg border border-gray-700 flex items-center justify-center bg-black">
+    <div className="bg-neutral-900 border border-red-900/20 p-5 rounded-2xl shadow-xl shadow-black/50 mb-10">
+      <h1 className="text-xl md:text-2xl font-bold mb-5 text-center break-words text-red-500 tracking-wide">{videoTitle}</h1>
+      
+      <div className="w-full aspect-video rounded-xl overflow-hidden shadow-2xl bg-black border border-neutral-800 relative z-10">
         {isBuffering && (
-            <div className='text-center text-white'>
-                <FaSpinner className="animate-spin text-4xl text-blue-400 mx-auto" />
-                <p className='mt-2'>Preparing secure video...</p>
+            <div className='absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm text-white'>
+                <FaSpinner className="animate-spin text-5xl text-red-600 mb-4" />
+                <p className='text-red-200 font-medium tracking-wide'>Preparing secure stream...</p>
             </div>
         )}
         <video id="video-player" style={{width: '100%', height: '100%'}} key={blobUrl}>
             <source src={blobUrl} type="video/mp4" />
         </video>
       </div>
-      <div className="flex mt-4 mb-4 border border-gray-700 rounded-lg overflow-hidden">
-        <input type="text" value={`https://${window.location.hostname}/play/${id}`} readOnly className="flex-1 p-3 bg-gray-900 text-white outline-none" />
-        <button onClick={handleCopy} className="bg-blue-600 hover:bg-blue-700 transition-colors text-white p-3">
-          <FaCopy />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div className="md:col-span-2 flex items-center bg-neutral-950 border border-red-900/30 rounded-lg overflow-hidden">
+            <input 
+                type="text" 
+                value={`https://${window.location.hostname}/play/${id}`} 
+                readOnly 
+                className="flex-1 p-3 bg-transparent text-neutral-300 outline-none text-sm font-mono" 
+            />
+            <button onClick={handleCopy} className="bg-neutral-800 hover:bg-red-900/50 text-red-400 p-3 border-l border-red-900/30 transition-colors">
+                <FaCopy />
+            </button>
+        </div>
+        <button onClick={handleDownloadClick} className="w-full bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 text-white py-3 rounded-lg flex items-center justify-center font-bold shadow-lg shadow-red-900/20 transition-all transform active:scale-95">
+            <FaDownload className="mr-2" />
+            Download Video
         </button>
       </div>
-      <button onClick={handleDownloadClick} className="w-full bg-blue-700 hover:bg-blue-600 transition-colors text-white py-3 rounded-lg flex items-center justify-center font-semibold shadow-md">
-        <FaDownload className="mr-2" />
-        Download
-      </button>
     </div>
   );
 
   const pageTitle = query ? `Search Results for "${query}"` : "More Videos";
 
   return (
-    <div className="container mx-auto max-w-6xl p-4 sm:p-6 text-white">
+    <div className="container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 text-neutral-200">
       {id && videoFound && <PlayerView />}
       
       {id && videoFound && recentVideos.length > 0 && <RecentPostsView videos={recentVideos} onCardClick={handleCardClick} />}
 
       { (query || id) && (
-        <div>
-          <h2 className="text-2xl font-bold mb-4 text-gray-300">{pageTitle}</h2>
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-6 text-red-100 flex items-center">
+            <span className="w-1 h-6 bg-red-600 mr-3 rounded-full"></span>
+            {pageTitle}
+          </h2>
           
           {currentVideos.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
               {currentVideos.map((video) => (
                   <div onClick={() => handleCardClick(video.id)} key={video.id} className="group transition-all cursor-pointer">
-                      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black border border-gray-700 group-hover:border-blue-500">
-                        <video className="w-full h-full object-cover" preload="metadata" muted>
+                      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-neutral-950 border border-neutral-800 group-hover:border-red-500 shadow-sm group-hover:shadow-red-900/30 transition-all duration-300">
+                        <video className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" preload="metadata" muted>
                             <source src={video.Url} type="video/mp4" />
                         </video>
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <FaPlay className="text-white text-4xl" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <div className="bg-red-600/90 p-3 rounded-full text-white transform scale-75 group-hover:scale-100 transition-transform">
+                                <FaPlay className="text-lg ml-1" />
+                            </div>
                         </div>
                       </div>
-                      <div className="mt-2">
-                        <h3 className="text-white font-medium text-sm sm:text-base line-clamp-2">{video.Judul}</h3>
+                      <div className="mt-3">
+                        <h3 className="text-neutral-300 font-medium text-sm leading-snug line-clamp-2 group-hover:text-red-400 transition-colors">{video.Judul}</h3>
                       </div>
                   </div>
               ))}
             </div>
           ) : (
-            <p className='text-gray-400'>
-              {query ? 'No videos found for your search.' : ''}
-            </p>
+            <div className="text-center py-10 bg-neutral-900/50 rounded-lg border border-red-900/10">
+                <p className='text-neutral-400'>
+                    {query ? 'No videos found for your search.' : ''}
+                </p>
+            </div>
           )}
 
           {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-8">
-                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="bg-gray-700 hover:bg-gray-600 transition-colors text-white py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+              <div className="flex items-center justify-center gap-4 mt-12">
+                <button 
+                    onClick={() => handlePageChange(currentPage - 1)} 
+                    disabled={currentPage === 1} 
+                    className="bg-neutral-800 hover:bg-red-900 text-white py-2 px-6 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-neutral-700"
+                >
                   Previous
                 </button>
-                <span className="text-gray-400">
-                  Page {currentPage} of {totalPages}
+                <span className="text-red-200 font-mono text-sm bg-red-900/20 px-4 py-2 rounded-full border border-red-900/30">
+                  {currentPage} / {totalPages}
                 </span>
-                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="bg-gray-700 hover:bg-gray-600 transition-colors text-white py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+                <button 
+                    onClick={() => handlePageChange(currentPage + 1)} 
+                    disabled={currentPage === totalPages} 
+                    className="bg-neutral-800 hover:bg-red-900 text-white py-2 px-6 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-neutral-700"
+                >
                   Next
                 </button>
               </div>
